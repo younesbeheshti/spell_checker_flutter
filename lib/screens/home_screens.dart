@@ -335,6 +335,7 @@ class _NotePageState extends State<NotePage> {
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
+                                    spellChecker.checkEd3 = !spellChecker.checkEd3;
                                     updateList();
                                   });
                                 },

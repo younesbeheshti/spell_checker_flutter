@@ -7,6 +7,12 @@ class SpellChecker {
   String farsiPath = 'assets/dictionaries/Persian_Dictionary.txt';
   static bool isTextFarsi = false;
 
+  bool checkEd3 = false;
+
+  int ed1 = 1;
+  int ed2 = 2;
+  int ed3 = 3;
+
   List<String> enDic = [];
   List<String> persianDic = [];
 
@@ -92,10 +98,16 @@ class SpellChecker {
         continue;
       }
       int ed = levenshtein(word, cleanDictWord);
-      if (ed == 1) {
+      if (ed == ed1) {
         suggestions.addFirst(cleanDictWord);
-      } else if (ed == 2) {
+      }
+      if (ed == ed2) {
         suggestions.addLast(cleanDictWord);
+      }
+      if(checkEd3) {
+        if (ed == ed3) {
+          suggestions.add(cleanDictWord);
+        }
       }
     }
 
