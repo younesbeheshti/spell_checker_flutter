@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 
+// SpellChecker class to manage spell checking and dictionary operations
 class SpellChecker {
   String enPath = 'assets/dictionaries/English_Dictionary.txt';
   String farsiPath = 'assets/dictionaries/Persian_Dictionary.txt';
@@ -9,13 +10,16 @@ class SpellChecker {
 
   bool checkEd3 = false;
 
+  // Edit distances used for spell checking
   int ed1 = 1;
   int ed2 = 2;
   int ed3 = 3;
 
+  // Lists to store the dictionaries
   List<String> enDic = [];
   List<String> persianDic = [];
 
+  // Constructor that initializes the dictionaries
   SpellChecker() {
     init();
   }
@@ -28,11 +32,13 @@ class SpellChecker {
     print('Persian Dictionary Loaded: ${persianDic.length} words');
   }
 
-  // Function to load the dictionary
+  // Function to load a dictionary from a file
   Future<List<String>> loadDictionary(String filePath) async {
     final file = await rootBundle.loadString(filePath);
     List<String> lines = file.split('\n');
-    return lines.map((line) => line.trim()).toList(); // Remove any extra whitespace
+    return lines
+        .map((line) => line.trim())
+        .toList(); // Remove any extra whitespace
   }
 
   // Function to remove punctuation from a word
@@ -44,19 +50,21 @@ class SpellChecker {
   // Function to check if a word is correctly spelled
   Future<bool> isCorrectlySpelled(String word) async {
     String cleanWord = removePunctuation(word);
-    bool isCorrect = enDic.contains(cleanWord) || persianDic.contains(cleanWord);
+    bool isCorrect =
+        enDic.contains(cleanWord) || persianDic.contains(cleanWord);
     print('Checking if "$word" is correctly spelled: $isCorrect');
     return isCorrect;
   }
 
+  // Levenshtein distance algorithm to calculate edit distance between two words
   int levenshtein(String word, String dictWord) {
     int len1 = word.length;
     int len2 = dictWord.length;
 
-    // Create a 2D list to hold the distance
+    // Create a 2D list to hold the distances
     List<List<int>> distance = List.generate(
       len1 + 1,
-          (i) => List<int>.filled(len2 + 1, 0),
+      (i) => List<int>.filled(len2 + 1, 0),
     );
 
     // Initialize the first row and column
@@ -82,6 +90,7 @@ class SpellChecker {
     return distance[len1][len2];
   }
 
+  // Function to get spelling suggestions for an input word
   Future<List<String>> spellCheck(String inputWord) async {
     if (enDic.isEmpty || persianDic.isEmpty) {
       await init();
@@ -91,9 +100,11 @@ class SpellChecker {
     print('Spell checking word: "$word"');
     Queue<String> suggestions = Queue<String>();
 
+    // Choose the appropriate dictionary based on the text language
     List<String> dictionary = isTextFarsi ? persianDic : enDic;
     for (final dictWord in dictionary) {
       String cleanDictWord = removePunctuation(dictWord);
+      // Skip words with length difference greater than 1
       if ((cleanDictWord.length - word.length).abs() > 1) {
         continue;
       }
@@ -104,13 +115,12 @@ class SpellChecker {
       if (ed == ed2) {
         suggestions.addLast(cleanDictWord);
       }
-      if(checkEd3) {
-        if (ed == ed3) {
-          suggestions.add(cleanDictWord);
-        }
+      if (checkEd3 && ed == ed3) {
+        suggestions.addLast(cleanDictWord);
       }
     }
 
+    // Limit the number of suggestions to 15
     List<String> finalList = [];
     for (int i = 0; i < suggestions.length && i < 15; i++) {
       finalList.add(suggestions.removeFirst());
@@ -120,6 +130,7 @@ class SpellChecker {
     return finalList;
   }
 
+  // Function to add a word to the appropriate dictionary
   void addToDictionary(String word, bool isFarsi) {
     if (isFarsi) {
       persianDic.add(word);
