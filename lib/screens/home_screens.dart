@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:untitled1/logic/spell_checker.dart';
 import 'package:untitled1/widgets/my_container.dart';
 
@@ -198,6 +199,20 @@ class _NotePageState extends State<NotePage> {
     return TextSpan(children: children);
   }
 
+  // Method to copy the content to clipBoard
+  void _copyTextToClipBoard() {
+    setState(() async {
+      await Clipboard.setData(ClipboardData(text: _controller.text));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Text copied to clipboard!'),
+        ),
+      );
+    });
+    print("text copied!");
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,6 +221,14 @@ class _NotePageState extends State<NotePage> {
         title: Text('Spell Checker'),
         centerTitle: true,
         backgroundColor: Colors.yellow.shade200,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top:8.0, right: 8),
+            child: GestureDetector(
+                onTap: _copyTextToClipBoard,
+                child: Icon(Icons.copy)),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

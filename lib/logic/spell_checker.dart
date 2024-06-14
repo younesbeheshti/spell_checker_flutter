@@ -4,10 +4,14 @@ import 'package:flutter/services.dart' show rootBundle;
 
 // SpellChecker class to manage spell checking and dictionary operations
 class SpellChecker {
+  // Paths to the dictionaries
   String enPath = 'assets/dictionaries/English_Dictionary.txt';
   String farsiPath = 'assets/dictionaries/Persian_Dictionary.txt';
+
+  // Flag to indicate if the text is in Farsi
   static bool isTextFarsi = false;
 
+  // Flag to enable additional spell checking for ed = 3
   bool checkEd3 = false;
 
   // Edit distances used for spell checking
